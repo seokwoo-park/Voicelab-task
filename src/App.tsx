@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import axios from "axios";
+import React, { useEffect } from "react";
+import { ContentInteraction, ContentTable } from "./components";
+import { useStore } from "./store";
 
-function App() {
+type Props = {};
+
+const App = (props: Props) => {
+  const { setCharacters, sort } = useStore();
+
+  const fetchDefaultData = async () => {
+    let characterList = [];
+    for (let i = 1; i < 43; i++) {
+      const { data } = await axios.get(
+        `https://rickandmortyapi.com/api/character/?page=${i}`
+      );
+      characterList.push(...data.results);
+    }
+    setCharacters(characterList);
+    sort(characterList);
+  };
+
+  useEffect(() => {
+    fetchDefaultData();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <h1 style={{ fontSize: "2rem" }}>Characters</h1>
+      <ContentInteraction />
+      <ContentTable />
     </div>
   );
-}
+};
 
 export default App;
